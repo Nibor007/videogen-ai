@@ -1,0 +1,13 @@
+langgraph==0.3.21
+langgraph-checkpoint-postgres==3.0.5
+langchain-anthropic==0.3.0
+fastapi==0.115.0
+uvicorn==0.30.0
+httpx==0.27.0
+boto3==1.35.0
+psycopg[binary]==3.3.3
+psycopg-pool==3.3.0
+python-dotenv==1.0.0
+pydantic==2.8.0
+pydantic-settings==2.0.0
+langsmith==0.3.1
