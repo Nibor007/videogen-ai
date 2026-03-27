@@ -5,6 +5,7 @@
   "cpu": "512",
   "memory": "1024",
   "executionRoleArn": "arn:aws:iam::574772738554:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::574772738554:role/ecsTaskRole",
   "containerDefinitions": [
     {
       "name": "videogen-api",
@@ -22,7 +23,8 @@
         {"name": "DATABASE_URL", "value": "postgresql://videogenadmin:VideoGen2024!@videogen-db.cupmsgwqevte.us-east-1.rds.amazonaws.com:5432/videogen"},
         {"name": "LANGCHAIN_TRACING_V2", "value": "true"},
         {"name": "LANGCHAIN_PROJECT", "value": "videogen-ai"},
-        {"name": "LANGCHAIN_ENDPOINT", "value": "https://api.smith.langchain.com"}        
+        {"name": "LANGCHAIN_ENDPOINT", "value": "https://api.smith.langchain.com"},
+        {"name": "LANGSMITH_WORKSPACE_ID", "value": "default"}
       ],
       "secrets": [
         {"name": "ANTHROPIC_API_KEY", "valueFrom": "arn:aws:secretsmanager:us-east-1:574772738554:secret:videogen/api-keys:ANTHROPIC_API_KEY::"},

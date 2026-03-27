@@ -36,6 +36,10 @@ def build_graph():
     checkpointer = PostgresSaver(conn)
     checkpointer.setup()
 
-    return builder.compile(checkpointer=checkpointer)
+    #return builder.compile(checkpointer=checkpointer)
+    return builder.compile(
+        checkpointer=checkpointer,
+        debug=False
+    )
 
 graph = build_graph()

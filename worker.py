@@ -36,7 +36,10 @@ def process_message(message: dict) -> bool:
 
         graph.invoke(
             initial_state,
-            config={"configurable": {"thread_id": job_id}}
+            config={
+                "configurable": {"thread_id": job_id},
+                "recursion_limit": 50
+            }
         )
 
         logger.info(f"[{job_id}] Job completado")
