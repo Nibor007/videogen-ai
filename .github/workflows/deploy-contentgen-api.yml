@@ -8,12 +8,14 @@ on:
       - ".github/workflows/deploy-contentgen-api.yml"
   workflow_dispatch:
 
+
 env:
-  AWS_REGION:     us-east-1
-  ECR_REPO:       contentgen-api
-  ECS_CLUSTER:    videogen-cluster
-  ECS_SERVICE:    contentgen-api-service
-  CONTAINER_NAME: contentgen-api
+  AWS_REGION:      us-east-1
+  ECR_REPO:        contentgen-api
+  ECS_CLUSTER:     videogen-cluster
+  ECS_SERVICE:     contentgen-api-service
+  TASK_DEFINITION: contentgen-api
+  CONTAINER_NAME:  contentgen-api
 
 jobs:
   test:
@@ -62,7 +64,7 @@ jobs:
       - name: Download current task definition
         run: |
           aws ecs describe-task-definition \
-            --task-definition ${{ env.ECS_SERVICE }} \
+            --task-definition ${{ env.TASK_DEFINITION }} \
             --query taskDefinition \
             > task-definition.json
 
