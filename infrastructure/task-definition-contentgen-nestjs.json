@@ -1,0 +1,51 @@
+{
+    "family": "contentgen-nestjs",
+    "taskRoleArn": "arn:aws:iam::574772738554:role/ecsTaskRole",
+    "executionRoleArn": "arn:aws:iam::574772738554:role/ecsTaskExecutionRole",
+    "networkMode": "awsvpc",
+    "requiresCompatibilities": ["FARGATE"],
+    "cpu": "512",
+    "memory": "1024",
+    "containerDefinitions": [
+        {
+            "name": "contentgen-nestjs",
+            "image": "574772738554.dkr.ecr.us-east-1.amazonaws.com/contentgen-nestjs:latest",
+            "essential": true,
+            "portMappings": [
+                {
+                    "containerPort": 3000,
+                    "hostPort": 3000,
+                    "protocol": "tcp"
+                }
+            ],
+            "environment": [
+                {
+                    "name": "AWS_REGION",
+                    "value": "us-east-1"
+                },
+                {
+                    "name": "PORT",
+                    "value": "3000"
+                },
+                {
+                    "name": "SQS_QUEUE_URL",
+                    "value": "https://sqs.us-east-1.amazonaws.com/574772738554/videogen-main"
+                }
+            ],
+            "secrets": [
+                {
+                    "name": "MONGODB_URI",
+                    "valueFrom": "arn:aws:secretsmanager:us-east-1:574772738554:secret:videogen/api-keys:MONGODB_URI::"
+                }
+            ],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/contentgen-nestjs",
+                    "awslogs-region": "us-east-1",
+                    "awslogs-stream-prefix": "ecs"
+                }
+            }
+        }
+    ]
+}

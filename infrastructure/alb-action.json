@@ -1,6 +1,6 @@
 [
   {
     "Type": "forward",
-    "TargetGroupArn": "arn:aws:elasticloadbalancing:us-east-1:574772738554:targetgroup/contentgen-tg/e7c720b0e1c821cf"
+    "TargetGroupArn": "arn:aws:elasticloadbalancing:us-east-1:574772738554:targetgroup/contentgen-nestjs-tg/9c7ae0e91c93279c"
   }
 ]

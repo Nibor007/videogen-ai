@@ -1,0 +1,27 @@
+{
+    "cluster": "videogen-cluster",
+    "serviceName": "contentgen-nestjs-service",
+    "taskDefinition": "contentgen-nestjs:2",
+    "desiredCount": 1,
+    "launchType": "FARGATE",
+    "networkConfiguration": {
+        "awsvpcConfiguration": {
+            "subnets": [
+                "subnet-0b4a4483ef3d2510d",
+                "subnet-0122bdab7e48dd7ea"
+            ],
+            "securityGroups": [
+                "sg-08a8c3167f9bb774e"
+            ],
+            "assignPublicIp": "ENABLED"
+        }
+    },
+    "loadBalancers": [
+        {
+            "targetGroupArn": "arn:aws:elasticloadbalancing:us-east-1:574772738554:targetgroup/contentgen-nestjs-tg/9c7ae0e91c93279c",
+            "containerName": "contentgen-nestjs",
+            "containerPort": 3000
+        }
+    ],
+    "healthCheckGracePeriodSeconds": 60
+}
