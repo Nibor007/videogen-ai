@@ -1,0 +1,83 @@
+name: Deploy to AWS ECS
+
+on:
+  push:
+    branches: [ main ]
+
+env:
+  AWS_REGION: us-east-1
+  ECR_API: videogen-api
+  ECR_WORKER: videogen-worker
+  ECS_CLUSTER: videogen-cluster
+  ECS_API_SERVICE: videogen-api-service
+  ECS_WORKER_SERVICE: videogen-worker-service
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Configurar AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Configurar Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+
+      - name: Ejecutar tests
+        run: pytest tests/ -v
+
+      - name: Login a ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build y push API
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_API:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_API:$IMAGE_TAG
+          docker tag $ECR_REGISTRY/$ECR_API:$IMAGE_TAG $ECR_REGISTRY/$ECR_API:latest
+          docker push $ECR_REGISTRY/$ECR_API:latest
+
+      - name: Build y push Worker
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -f Dockerfile.worker -t $ECR_REGISTRY/$ECR_WORKER:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_WORKER:$IMAGE_TAG
+          docker tag $ECR_REGISTRY/$ECR_WORKER:$IMAGE_TAG $ECR_REGISTRY/$ECR_WORKER:latest
+          docker push $ECR_REGISTRY/$ECR_WORKER:latest
+
+      - name: Redesplegar API
+        run: |
+          aws ecs update-service \
+            --cluster $ECS_CLUSTER \
+            --service $ECS_API_SERVICE \
+            --force-new-deployment
+
+      - name: Redesplegar Worker
+        run: |
+          aws ecs update-service \
+            --cluster $ECS_CLUSTER \
+            --service $ECS_WORKER_SERVICE \
+            --force-new-deployment
+
+      - name: Verificar API estable
+        run: |
+          aws ecs wait services-stable \
+            --cluster $ECS_CLUSTER \
+            --services $ECS_API_SERVICE
+          echo "API deployment completado"

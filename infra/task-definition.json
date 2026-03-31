@@ -1,0 +1,46 @@
+{
+  "family": "videogen-api",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "executionRoleArn": "arn:aws:iam::574772738554:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::574772738554:role/ecsTaskRole",
+  "containerDefinitions": [
+    {
+      "name": "videogen-api",
+      "image": "574772738554.dkr.ecr.us-east-1.amazonaws.com/videogen-api:latest",
+      "portMappings": [
+        {
+          "containerPort": 8000,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        {"name": "AWS_REGION", "value": "us-east-1"},
+        {"name": "S3_BUCKET", "value": "videogen-assets-574772738554"},
+        {"name": "SQS_QUEUE_URL", "value": "https://sqs.us-east-1.amazonaws.com/574772738554/videogen-main"},
+        {"name": "LANGCHAIN_TRACING_V2", "value": "true"},
+        {"name": "LANGCHAIN_PROJECT", "value": "videogen-ai"},
+        {"name": "LANGCHAIN_ENDPOINT", "value": "https://api.smith.langchain.com"},
+        {"name": "LANGSMITH_WORKSPACE_ID", "value": "default"}
+      ],
+      "secrets": [
+        {"name": "ANTHROPIC_API_KEY", "valueFrom": "arn:aws:secretsmanager:us-east-1:574772738554:secret:videogen/api-keys:ANTHROPIC_API_KEY::"},
+        {"name": "ELEVENLABS_API_KEY", "valueFrom": "arn:aws:secretsmanager:us-east-1:574772738554:secret:videogen/api-keys:ELEVENLABS_API_KEY::"},
+        {"name": "FREEPIK_API_KEY", "valueFrom": "arn:aws:secretsmanager:us-east-1:574772738554:secret:videogen/api-keys:FREEPIK_API_KEY::"},
+        {"name": "LANGCHAIN_API_KEY", "valueFrom": "arn:aws:secretsmanager:us-east-1:574772738554:secret:videogen/api-keys:LANGCHAIN_API_KEY::"},
+        {"name": "DATABASE_URL", "valueFrom": "arn:aws:secretsmanager:us-east-1:574772738554:secret:videogen/api-keys:DATABASE_URL::"}
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/videogen-api",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "essential": true
+    }
+  ]
+}
