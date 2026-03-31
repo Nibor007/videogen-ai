@@ -1,0 +1,27 @@
+{
+    "cluster": "videogen-cluster",
+    "serviceName": "contentgen-api-service",
+    "taskDefinition": "contentgen-api:1",
+    "desiredCount": 1,
+    "launchType": "FARGATE",
+    "networkConfiguration": {
+        "awsvpcConfiguration": {
+            "subnets": [
+                "subnet-0b4a4483ef3d2510d",
+                "subnet-0122bdab7e48dd7ea"
+            ],
+            "securityGroups": [
+                "sg-08a8c3167f9bb774e"
+            ],
+            "assignPublicIp": "ENABLED"
+        }
+    },
+    "loadBalancers": [
+        {
+            "targetGroupArn": "arn:aws:elasticloadbalancing:us-east-1:574772738554:targetgroup/contentgen-tg/e7c720b0e1c821cf",
+            "containerName": "contentgen-api",
+            "containerPort": 8000
+        }
+    ],
+    "healthCheckGracePeriodSeconds": 60
+}

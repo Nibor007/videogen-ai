@@ -1,0 +1,63 @@
+{
+    "family": "contentgen-api",
+    "taskRoleArn": "arn:aws:iam::574772738554:role/ecsTaskRole",
+    "executionRoleArn": "arn:aws:iam::574772738554:role/ecsTaskExecutionRole",
+    "networkMode": "awsvpc",
+    "requiresCompatibilities": ["FARGATE"],
+    "cpu": "512",
+    "memory": "1024",
+    "containerDefinitions": [
+        {
+            "name": "contentgen-api",
+            "image": "574772738554.dkr.ecr.us-east-1.amazonaws.com/contentgen-api:latest",
+            "essential": true,
+            "portMappings": [
+                {
+                    "containerPort": 8000,
+                    "hostPort": 8000,
+                    "protocol": "tcp"
+                }
+            ],
+            "environment": [
+                {
+                    "name": "AWS_REGION",
+                    "value": "us-east-1"
+                },
+                {
+                    "name": "S3_BUCKET",
+                    "value": "videogen-assets-574772738554"
+                },
+                {
+                    "name": "S3_PREFIX",
+                    "value": "contentgen/images"
+                },
+                {
+                    "name": "BEDROCK_IMAGE_MODEL",
+                    "value": "amazon.nova-canvas-v1:0"
+                },
+                {
+                    "name": "PRESIGNED_URL_TTL",
+                    "value": "3600"
+                }
+            ],
+            "secrets": [
+                {
+                    "name": "ANTHROPIC_API_KEY",
+                    "valueFrom": "arn:aws:secretsmanager:us-east-1:574772738554:secret:videogen/api-keys:ANTHROPIC_API_KEY::"
+                },
+                {
+                    "name": "ELEVENLABS_API_KEY",
+                    "valueFrom": "arn:aws:secretsmanager:us-east-1:574772738554:secret:videogen/api-keys:ELEVENLABS_API_KEY::"
+                }
+            ],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/contentgen-api",
+                    "awslogs-region": "us-east-1",
+                    "awslogs-stream-prefix": "ecs"
+                }
+            }
+        }
+    ]
+}
