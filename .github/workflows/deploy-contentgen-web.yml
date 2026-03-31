@@ -1,0 +1,52 @@
+name: Deploy contentgen-web
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/contentgen-web/**"
+      - ".github/workflows/deploy-contentgen-web.yml"
+  workflow_dispatch:
+
+env:
+  AWS_REGION:        us-east-1
+  S3_BUCKET:         videogen-frontend-574772738554
+  CLOUDFRONT_ID:     E3DIUM69QAL3O
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        working-directory: apps/contentgen-web
+        run: npm ci
+
+      - name: Build
+        working-directory: apps/contentgen-web
+        run: npm run build
+        env:
+          NEXT_PUBLIC_API_URL: http://videogen-alb-1738263676.us-east-1.elb.amazonaws.com
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region:            ${{ env.AWS_REGION }}
+
+      - name: Deploy to S3
+        working-directory: apps/contentgen-web
+        run: aws s3 sync out/ s3://${{ env.S3_BUCKET }} --delete
+
+      - name: Invalidate CloudFront
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ env.CLOUDFRONT_ID }} \
+            --paths "/*"
