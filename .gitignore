@@ -1,8 +1,18 @@
-venv/
-__pycache__/
-*.pyc
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Next.js
+apps/contentgen-web/.next/
+apps/contentgen-web/out/
+
+# Python
+**/__pycache__/
+**/*.pyc
 .env
-infra/secrets.json
-infra/redrive.json
-*.egg-info/
-.pytest_cache/
+.env.local
+.env.production.local
+
+# Build
+dist/
+build/
